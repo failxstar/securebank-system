@@ -2,14 +2,15 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 class Account {
+
     int id;
-    String customerName;
+    String name;
     double balance;
 
-    Account(int id, String customerName) {
+    Account(int id, String name) {
         this.id = id;
-        this.customerName = customerName;
-        this.balance = 0;
+        this.name = name;
+        balance = 0;
     }
 }
 
@@ -22,13 +23,15 @@ public class BankConsoleApp {
     static HashMap<Integer, Account> accounts = new HashMap<>();
     static int nextId = 1;
 
-    public static int createAccount(String name) {
-        Account a = new Account(nextId, name);
-        accounts.put(nextId, a);
+    static int createAccount(String name) {
+
+        Account acc = new Account(nextId, name);
+        accounts.put(nextId, acc);
+
         return nextId++;
     }
 
-    public static void deposit(int id, double amount)
+    static void deposit(int id, double amount)
             throws AccountNotFoundException {
 
         if (!accounts.containsKey(id))
@@ -37,19 +40,28 @@ public class BankConsoleApp {
         accounts.get(id).balance += amount;
     }
 
-    public static void withdraw(int id, double amount)
+    static void withdraw(int id, double amount)
             throws AccountNotFoundException,
             InsufficientFundsException {
 
         if (!accounts.containsKey(id))
             throw new AccountNotFoundException();
 
-        Account a = accounts.get(id);
+        Account acc = accounts.get(id);
 
-        if (a.balance < amount)
+        if (acc.balance < amount)
             throw new InsufficientFundsException();
 
-        a.balance -= amount;
+        acc.balance -= amount;
+    }
+
+    static double checkBalance(int id)
+            throws AccountNotFoundException {
+
+        if (!accounts.containsKey(id))
+            throw new AccountNotFoundException();
+
+        return accounts.get(id).balance;
     }
 
     public static void main(String[] args) {
@@ -61,9 +73,10 @@ public class BankConsoleApp {
             System.out.println("\n1. Create Account");
             System.out.println("2. Deposit");
             System.out.println("3. Withdraw");
-            System.out.println("4. Exit");
+            System.out.println("4. Check Balance");
+            System.out.println("5. Exit");
 
-            System.out.print("Enter choice: ");
+            System.out.print("Enter your choice: ");
             int choice = sc.nextInt();
 
             try {
@@ -71,53 +84,73 @@ public class BankConsoleApp {
                 switch (choice) {
 
                     case 1:
+
                         sc.nextLine();
 
-                        System.out.print("Enter customer name: ");
+                        System.out.print("Enter name: ");
                         String name = sc.nextLine();
 
                         int id = createAccount(name);
 
                         System.out.println("Account created");
-                        System.out.println("Account ID: " + id);
+                        System.out.println("ID: " + id);
+
                         break;
 
                     case 2:
-                        System.out.print("Enter account ID: ");
-                        int dId = sc.nextInt();
+
+                        System.out.print("Enter ID: ");
+                        int id1 = sc.nextInt();
 
                         System.out.print("Enter amount: ");
-                        double dAmount = sc.nextDouble();
+                        double amount1 = sc.nextDouble();
 
-                        deposit(dId, dAmount);
+                        deposit(id1, amount1);
 
-                        System.out.println("Deposit successful");
+                        System.out.println("Money deposited");
+
                         break;
 
                     case 3:
-                        System.out.print("Enter account ID: ");
-                        int wId = sc.nextInt();
+
+                        System.out.print("Enter ID: ");
+                        int id2 = sc.nextInt();
 
                         System.out.print("Enter amount: ");
-                        double wAmount = sc.nextDouble();
+                        double amount2 = sc.nextDouble();
 
-                        withdraw(wId, wAmount);
+                        withdraw(id2, amount2);
 
-                        System.out.println("Withdrawal successful");
+                        System.out.println("Money withdrawn");
+
                         break;
 
                     case 4:
-                        System.out.println("Thank you!");
+
+                        System.out.print("Enter ID: ");
+                        int id3 = sc.nextInt();
+
+                        System.out.println("Balance: " + checkBalance(id3));
+
+                        break;
+
+                    case 5:
+
+                        System.out.println("Thank you");
                         return;
 
                     default:
-                        System.out.println("Invalid choice");
+
+                        System.out.println("Wrong choice");
                 }
 
             } catch (AccountNotFoundException e) {
+
                 System.out.println("Account not found");
+
             } catch (InsufficientFundsException e) {
-                System.out.println("Insufficient balance");
+
+                System.out.println("Not enough balance");
             }
         }
     }
